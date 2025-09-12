@@ -121,35 +121,39 @@ const StockTicker = () => {
 
   return (
     <div
-      ref={containerRef}
-      className={`fixed left-0 w-full z-40 border-b shadow-md overflow-hidden text-sm ${
-        isDarkMode ? "bg-[#111] text-white border-gray-700" : "bg-white text-black border-gray-200"
-      }`}
-      style={{ top: "var(--navbar-height, 56px)" }}
-    >
-      <div
-        ref={tickerRef}
-        className="inline-block whitespace-nowrap py-2"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        style={{ willChange: "transform", cursor: "pointer" }}
+  ref={containerRef}
+  className={`fixed w-[84.4vw] z-40 border-b shadow-md overflow-hidden text-sm ${
+    isDarkMode ? "bg-[#111] text-white border-gray-700" : "bg-[#111] text-black border-gray-200"
+  }`}
+  style={{ top: "var(--navbar-height, 56px)" }}
+>
+  <div
+    ref={tickerRef}
+    className="inline-block whitespace-nowrap py-2"
+    onMouseEnter={() => setPaused(true)}
+    onMouseLeave={() => setPaused(false)}
+    style={{ willChange: "transform", cursor: "pointer" }}
+  >
+    {items.map(({ symbol, price, change, percent }, index) => (
+      <span
+        key={index}
+        className={`inline-flex items-center px-4 ${
+          index !== 0 ? "border-l border-gray-400" : ""
+        }`}
+        style={{
+          color: change.startsWith("-") ? "#f87171" : "#34d399",
+        }}
       >
-        {items.map(({ symbol, price, change, percent }, index) => (
-          <span
-            key={index}
-            className="inline-block mx-6"
-            style={{
-              color: change.startsWith("-") ? "#f87171" : "#34d399",
-              marginRight: index === items.length - 1 ? ELEMENT_GAP : undefined,
-            }}
-          >
-            {ICONS[symbol]}
-            <strong style={{ color: LOGO_COLORS[symbol] || "inherit" }}>{symbol}</strong> {price}{" "}
-            {change.startsWith("-") ? "↓" : "↑"} {change} ({percent}%)
-          </span>
-        ))}
-      </div>
-    </div>
+        {ICONS[symbol]}
+        <span style={{ color: LOGO_COLORS[symbol] || "inherit", marginLeft: "2px" }}>
+          {symbol}
+        </span>{" "}
+        {price} {change.startsWith("-") ? "↓" : "↑"} {change} ({percent}%)
+      </span>
+    ))}
+  </div>
+</div>
+
   );
 };
 

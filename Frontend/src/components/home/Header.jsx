@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const API =
-    process.env.NODE_ENV === "production"
-        ? "https://dynamicnewsbackend.vercel.app/admin/upload"
-        : "http://localhost:5000/admin/upload";
+const API = `${import.meta.env.VITE_BACKEND_URL}/admin/upload`;
 
 export default function Header({ isDarkMode }) {
     const [headlineNews, setHeadlineNews] = useState([]);
@@ -40,7 +37,10 @@ export default function Header({ isDarkMode }) {
     };
 
     return (
-        <div className="w-full space-y-4 mt-4">
+        <div className="w-full mt-6">
+            <h2 className="font-bold text-xl text-orange-400" >
+            Today's Top Update
+          </h2>
             {headlineNews.map((news) => (
                 <Link
                     to={`/blog/${news._id}`}

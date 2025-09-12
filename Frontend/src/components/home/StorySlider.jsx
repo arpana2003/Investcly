@@ -1,31 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react"; // nice icons
 
-// Simple "time ago" formatter
-const getTimeAgo = (dateStr)=> {
-  const now = new Date();
-  const past = new Date(dateStr);
-  const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
+const API = `${import.meta.env.VITE_BACKEND_URL}/api/stories`;
 
-  const mins = Math.floor(diff / 60);
-  const hours = Math.floor(diff / 3600);
-  const days = Math.floor(diff / 86400);
-
-  if (diff < 60) return "just now";
-  if (mins < 60) return `${mins} min ago`;
-  if (hours < 24) return `${hours} hr ago`;
-  return `${days} day${days > 1 ? "s" : ""} ago`;
-};
-
-const API =
-  process.env.NODE_ENV === "production"
-    ? "https://dynamicnewsbackend.vercel.app/api/stories"
-    : "http://localhost:5000/api/stories";
-
-const UserStorySlider = ({ cardBg, border, isDarkMode }) => {
+const StorySlider = ({ isDarkMode }) => {
   const [stories, setStories] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef(null);
+  const visibleCards = 2.5;
 
   useEffect(() => {
     fetch(API)
@@ -34,105 +15,291 @@ const UserStorySlider = ({ cardBg, border, isDarkMode }) => {
       .catch(() => setStories([]));
   }, []);
 
-  const scrollHandler = (dir) => {
-    const visibleCount = 3;
-    const total = stories.length;
-    let nextIndex =
-      dir === "left"
-        ? Math.max(currentIndex - visibleCount, 0)
-        : Math.min(currentIndex + visibleCount, total - visibleCount);
+  const totalCards = stories.length;
 
-    setCurrentIndex(nextIndex);
+  const goToIndex = (index) => {
+    if (index < 0) index = 0;
+    if (index > totalCards - Math.floor(visibleCards))
+      index = totalCards - Math.floor(visibleCards);
+    setCurrentIndex(index);
   };
 
-  const visibleStories = stories.slice(currentIndex, currentIndex + 3);
+  const goPrev = () => goToIndex(currentIndex - 1);
+  const goNext = () => goToIndex(currentIndex + 1);
 
   return (
-    <div
-      className={`select-none rounded min-h-[400px] px-4 py-6 ${
-        isDarkMode ? "bg-orange-300" : "bg-orange-400"
-      }`}
-    >
-      <h2 className="text-2xl font-bold text-black mb-4 text-center">User Stories</h2>
+    <div className="w-full px-4 py-6 select-none relative">
+      <h2 className="text-2xl font-bold text-[#f77331] text-center mb-8 md:max-xl:mb-3">
+        Short Stories
+      </h2>
 
-      <div className="relative w-full">
-        <div className="flex justify-center gap-4 overflow-hidden">
-          {visibleStories.map((story, index) => {
-            const slide = story.slides?.[0];
+      <div className="overflow-hidden relative group">
+        {/* Arrows */}
+        {currentIndex > 0 && (
+          <button
+            onClick={goPrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
+                 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 
+                 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
+            <ChevronLeft size={24} className="text-gray-700" />
+          </button>
+        )}
+        {currentIndex < totalCards - Math.floor(visibleCards) && (
+          <button
+            onClick={goNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
+                 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 
+                 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
+            <ChevronRight size={24} className="text-gray-700" />
+          </button>
+        )}
 
-            return (
-           <div
-  key={story._id}
-  className={`flex flex-col items-center justify-start text-sm rounded-lg shadow-md border cursor-pointer overflow-hidden relative group`}
-  style={{
-    background: isDarkMode ? "#23253b" : cardBg,
-    borderColor: border,
-    width: "200px",
-    height: "200px",
-  }}
->
-  {/* Image or Video */}
-  {story.storyType === "video" && slide?.imageUrl ? (
-    <video
-      src={slide.imageUrl}
-      className="w-full h-[120px] object-cover"
-      controls
-      draggable={false}
-    />
-  ) : slide?.imageUrl ? (
-    <img
-      src={slide.imageUrl}
-      alt="story"
-      className="w-full h-[120px] object-cover transition-transform duration-300 group-hover:scale-105"
-      draggable={false}
-    />
-  ) : (
-    <div className="w-full h-[120px] bg-gray-300" />
-  )}
-
-  {/* Title */}
-  <div className="p-2 w-full text-center relative">
-    <h3
-      className={`font-semibold text-orange-600 line-clamp-1 hover:underline`}
-    >
-      {story.title}
-    </h3>
-  </div>
-
-  {/* Time Bottom Left */}
-  <p
-    className={`absolute bottom-2 left-2 text-xs ${
-      isDarkMode ? "text-gray-400" : "text-gray-600"
-    }`}
+        {/* Slider */}
+        <div
+    className="flex transition-transform duration-500"
+    style={{
+      transform: `translateX(-${(currentIndex * 100) / visibleCards}%)`,
+    }}
   >
-    {getTimeAgo(story.createdAt)}
-  </p>
-</div>
 
-            );
-          })}
+          {stories.map((story) => (
+            <div
+              key={story._id}
+              className="w-[18rem] min-w-[18rem] h-[40vh] px-2 "
+            >
+              <div
+                className="relative w-full h-full cursor-pointer"
+                style={{ perspective: "1000px" }}
+              >
+                <div
+                  className="relative w-full h-full transition-transform duration-700"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* Front */}
+                  <div
+                    className="absolute w-full h-full rounded-lg shadow-lg overflow-hidden"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(0deg)",
+                    }}
+                  >
+                    <div
+                      className="w-full h-full relative"
+                      style={{
+                        backgroundImage: `url(${
+                          story.slides?.[0]?.imageUrl ||
+                          "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80"
+                        })`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      {/* Title */}
+                      <div className="absolute top-2 left-2 right-2 p-3 bg-black/40 rounded">
+                        <h3 className="text-lg font-bold line-clamp-2 text-white">
+                          {story.title}
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Back */}
+                  <div
+                    className="absolute w-full h-full rounded-lg shadow-lg overflow-auto p-4 bg-black"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                      backdropFilter: "blur(4px)",
+                      color: "white",
+                    }}
+                  >
+                    <h3 className="font-bold text-lg mb-2">{story.title}</h3>
+                    <p className="text-sm mb-2 font-semibold">
+                      Author: {story.authorName}
+                    </p>
+                    {story.slides?.map(
+                      (slide, i) =>
+                        slide.text && (
+                          <p key={i} className="text-sm mb-2">
+                            {slide.text}
+                          </p>
+                        )
+                    )}
+                  </div>
+                </div>
+
+                {/* Hover flip */}
+                <style>
+                  {`
+                    div.relative.w-full.h-full.cursor-pointer:hover > div {
+                      transform: rotateY(180deg);
+                    }
+                  `}
+                </style>
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* Nav Arrows at bottom-left */}
-        {stories.length > 3 && (
-          <div className="absolute top-56 left-4 flex gap-3 z-10">
+      {/* Dots */}
+      <div className="flex justify-center mt-6 space-x-2">
+        {Array.from({ length: totalCards - Math.floor(visibleCards) + 1 }).map(
+          (_, i) => (
             <button
-              onClick={() => scrollHandler("left")}
-              className="bg-orange-500 border-2 border-amber-50 text-white p-2 rounded-full shadow"
-            >
-              <FaArrowLeft />
-            </button>
-            <button
-              onClick={() => scrollHandler("right")}
-              className="bg-orange-500 border-2 border-amber-50 text-white p-2 rounded-full shadow"
-            >
-              <FaArrowRight />
-            </button>
-          </div>
+              key={i}
+              className={`w-3 h-3 rounded-full ${
+                i === currentIndex ? "bg-orange-400" : "bg-gray-300"
+              }`}
+              onClick={() => goToIndex(i)}
+            />
+          )
         )}
       </div>
     </div>
   );
 };
 
-export default UserStorySlider;
+export default StorySlider;
+
+// import React, { useEffect, useState } from "react";
+
+// const API = `${import.meta.env.VITE_BACKEND_URL}/api/stories`;
+
+// const StorySlider = ({ isDarkMode }) => {
+//   const [stories, setStories] = useState([]);
+//   const [currentIndex, setCurrentIndex] = useState(0);
+//   const visibleCards = 2.5;
+
+//   useEffect(() => {
+//     fetch(API)
+//       .then((res) => res.json())
+//       .then((data) => setStories(data))
+//       .catch(() => setStories([]));
+//   }, []);
+
+//   const totalCards = stories.length;
+
+//   const goToIndex = (index) => {
+//     if (index < 0) index = 0;
+//     if (index > totalCards - Math.floor(visibleCards))
+//       index = totalCards - Math.floor(visibleCards);
+//     setCurrentIndex(index);
+//   };
+
+//   return (
+//     <div className="w-full px-4 py-6 select-none">
+//       <h2 className="text-2xl font-bold text-[#f77331] text-center mb-8 md:max-xl:mb-3">
+//         Short Stories
+//       </h2>
+
+//       <div className="overflow-hidden">
+//         <div
+//           className="flex transition-transform duration-500"
+//           style={{
+//             transform: `translateX(-${(currentIndex * 100) / visibleCards}%)`,
+//           }}
+//         >
+//           {stories.map((story) => (
+//             <div
+//               key={story._id}
+//               className="w-[18rem] min-w-[18rem] h-[40vh] px-2 "
+//             >
+//               <div
+//                 className="relative w-full h-full cursor-pointer"
+//                 style={{ perspective: "1000px" }}
+//               >
+//                 <div
+//                   className="relative w-full h-full transition-transform duration-700"
+//                   style={{ transformStyle: "preserve-3d" }}
+//                 >
+//                   {/* Front */}
+//                   <div
+//                     className="absolute w-full h-full rounded-lg shadow-lg overflow-hidden"
+//                     style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
+//                   >
+//                     <div
+//                       className="w-full h-full relative"
+//                       style={{
+//                         backgroundImage: `url(${
+//                           story.slides?.[0]?.imageUrl ||
+//                           "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80"
+//                         })`,
+//                         backgroundSize: "cover",
+//                         backgroundPosition: "center",
+//                       }}
+//                     >
+//                       {/* Title & Tags */}
+//                       <div className="absolute top-2 left-2 right-2 p-3 bg-black/40 bg-opacity-10 rounded">
+//                         <h3 className="text-lg font-bold line-clamp-2 text-white">
+//                           {story.title}
+//                         </h3>
+//                         <div className="flex flex-wrap gap-1 mt-2">
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* Back */}
+//                   <div
+//                     className="absolute w-full h-full rounded-lg shadow-lg overflow-auto p-4 bg-black"
+//                     style={{
+//                       backfaceVisibility: "hidden",
+//                       transform: "rotateY(180deg)",
+
+//                       backdropFilter: "blur(4px)",
+//                       color: "white",
+//                     }}
+//                   >
+//                     <h3 className="font-bold text-lg mb-2">{story.title}</h3>
+
+//                     <p className="text-sm mb-2 font-semibold">
+//                       Author: {story.authorName}
+//                     </p>
+
+//                     {story.slides?.map(
+//                       (slide, i) =>
+//                         slide.text && (
+//                           <p key={i} className="text-sm mb-2">
+//                             {slide.text}
+//                           </p>
+//                         )
+//                     )}
+//                   </div>
+//                 </div>
+
+//                 {/* Hover flip */}
+//                 <style>
+//                   {`
+//                     div.relative.w-full.h-full.cursor-pointer:hover > div {
+//                       transform: rotateY(180deg);
+//                     }
+//                   `}
+//                 </style>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* Dots */}
+//       <div className="flex justify-center mt-6 space-x-2">
+//         {Array.from({ length: totalCards - Math.floor(visibleCards) + 1 }).map(
+//           (_, i) => (
+//             <button
+//               key={i}
+//               className={`w-3 h-3 rounded-full ${
+//                 i === currentIndex ? "bg-orange-400" : "bg-gray-300"
+//               }`}
+//               onClick={() => goToIndex(i)}
+//             />
+//           )
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default StorySlider;

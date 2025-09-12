@@ -3,10 +3,7 @@ import { useSelector } from 'react-redux';
 import { FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 
-const API =
-  process.env.NODE_ENV === "production"
-    ? "https://dynamicnewsbackend.vercel.app/api/stories"
-    : "http://localhost:5000/api/stories";
+const API = `${import.meta.env.VITE_BACKEND_URL}/api/stories`;
 
 const StoryForm = () => {
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);

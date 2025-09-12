@@ -4,10 +4,7 @@ import { useSelector } from "react-redux";
 import { categories, subcategoriesMap } from "@constants/index";
 import CloudinaryUploader from "../common/Cloudinary";
 
-const API =
-  process.env.NODE_ENV === "production"
-    ? "https://dynamicnewsbackend.vercel.app/admin/upload"
-    : "http://localhost:5000/admin/upload";
+const API = `${import.meta.env.VITE_BACKEND_URL}/admin/upload`;
 
 const PAGE_SIZE = 8, MAX_PAGES = 10;
 const initialSection = { subtitle: "", description: "", imageUrl: "" };

@@ -10,10 +10,7 @@ export default function ResetPassword({ email }) {
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
   const navigate = useNavigate();
 
-  const API_BASE =
-    process.env.NODE_ENV === 'production'
-      ? 'https://dynamicnewsbackend.vercel.app'
-      : 'http://localhost:5000';
+  const API_BASE = `${import.meta.env.VITE_BACKEND_URL}`;
 
   const handleReset = async () => {
     try {

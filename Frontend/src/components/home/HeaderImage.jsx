@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const API =
-  process.env.NODE_ENV === "production"
-    ? "https://dynamicnewsbackend.vercel.app/admin/upload"
-    : "http://localhost:5000/admin/upload";
+const API = `${import.meta.env.VITE_BACKEND_URL}/admin/upload`;
 
 export default function HeaderImage({ isDarkMode }) {
   const [bottomNews, setBottomNews] = useState([]);

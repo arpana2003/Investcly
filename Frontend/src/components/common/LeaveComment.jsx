@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MessageCircle, Loader } from "lucide-react";
 
-const API =
-  process.env.NODE_ENV === "production"
-    ? "https://dynamicnewsbackend.vercel.app/admin/upload"
-    : "http://localhost:5000/admin/upload";
+const API = `${import.meta.env.VITE_BACKEND_URL}/admin/upload`;
  
 export default function LeaveComment({ blogId }) {
   const [comments, setComments] = useState([]);

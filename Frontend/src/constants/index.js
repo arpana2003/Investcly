@@ -1,17 +1,21 @@
 export const categories = [
   "All",
-  "Finance Blog",
+  "News",
+  "Finance",
   "Budget",
   "Investment",
-  "Insurance",
   "Loan",
   "GST",
   "Tax",
   "Saving",
+  "Case Studies",
+  "FinTech",
+  "Calculator",
 ];
 
 export const subcategoriesMap = {
   "Finance Blog": [
+    "News",
     "Personal finance",
     "Behavioural finance",
     "Financial future planning",
@@ -20,6 +24,7 @@ export const subcategoriesMap = {
     "Financial advisor",
   ],
   "Budget": [
+    "News",
     "Budget types",
     "Finance budget",
     "Static budget",
@@ -27,6 +32,7 @@ export const subcategoriesMap = {
     "Budget elements",
   ],
   "Investment": [
+    "News",
     "Investment strategies",
     "Investment plans",
     "Investment ideas",
@@ -36,6 +42,7 @@ export const subcategoriesMap = {
     "Investment market",
   ],
   "Insurance": [
+    "News",
     "Health insurance",
     "Some Life insurance",
     "Travel Insurance",
@@ -45,6 +52,7 @@ export const subcategoriesMap = {
     "Insurance calculator",
   ],
   "Loan": [
+    "News",
     "Home loan",
     "Personal loan",
     "Business loan",
@@ -54,6 +62,7 @@ export const subcategoriesMap = {
     "Secured loan",
   ],
   "GST": [
+    "News",
     "GST collection",
     "GST calculator",
     "Types of GST",
@@ -63,6 +72,7 @@ export const subcategoriesMap = {
     "IGST",
   ],
   "Tax": [
+    "News",
     "Tax filing",
     "Income tax",
     "Tax saving",
@@ -73,6 +83,7 @@ export const subcategoriesMap = {
     "Indirect tax",
   ],
   "Saving": [
+    "News",
     "Importance of saving",
     "Saving tips",
     "Saving measures",

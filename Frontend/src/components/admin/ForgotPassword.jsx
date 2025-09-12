@@ -10,10 +10,7 @@ export default function ForgotPassword({ setResetEmail }) {
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
 
-    const API_BASE =
-        process.env.NODE_ENV === 'production'
-            ? 'https://dynamicnewsbackend.vercel.app'
-            : 'http://localhost:5000';
+    const API_BASE = `${import.meta.env.VITE_BACKEND_URL}`;
 
     const [loading, setLoading] = useState(false);
 

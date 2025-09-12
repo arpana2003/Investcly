@@ -1,27 +1,25 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const InvestmentCalculator = () => {
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
 
-  const [initial, setInitial] = useState('');
-  const [monthly, setMonthly] = useState('');
-  const [rate, setRate] = useState('');
-  const [years, setYears] = useState('');
+  const [initial, setInitial] = useState("50000");
+  const [monthly, setMonthly] = useState("2000");
+  const [rate, setRate] = useState("8");
+  const [years, setYears] = useState("10");
   const [result, setResult] = useState(null);
 
   const calculateInvestment = () => {
     const P = parseFloat(initial);
     const PMT = parseFloat(monthly);
-    const r = parseFloat(rate) / 100 / 12; // monthly interest
+    const r = parseFloat(rate) / 100 / 12; // monthly rate
     const n = parseFloat(years) * 12; // total months
 
     if (!P || !PMT || !r || !n) return;
 
-    // Compound interest formula with regular contributions
     const futureValue =
-      P * Math.pow(1 + r, n) +
-      PMT * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+      P * Math.pow(1 + r, n) + PMT * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
 
     const totalInvested = P + PMT * n;
     const gain = futureValue - totalInvested;
@@ -33,85 +31,146 @@ const InvestmentCalculator = () => {
     });
   };
 
-  const containerStyle = `p-6 rounded-xl shadow-xl max-w-xl w-full mx-auto mt-10 ${
-    isDarkMode ? 'bg-black' : 'bg-white'
+  useEffect(() => {
+    calculateInvestment();
+  }, [initial, monthly, rate, years]);
+
+  const containerStyle = `p-6 rounded-xl shadow-xl max-w-lg w-full mx-auto mt-10 ${
+    isDarkMode ? "bg-black" : "bg-white"
   }`;
 
-  const inputStyle = `p-2 rounded-md border w-full focus:outline-none ${
+  const inputStyle = `p-2 rounded-md border focus:outline-none accent-orange-400 ${
     isDarkMode
-      ? 'bg-black text-white border-amber-600'
-      : 'bg-white text-black border-black'
+      ? "bg-black text-white border-amber-600"
+      : "bg-white text-black border-black"
   }`;
 
-  const labelStyle = `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-black'}`;
+  const labelStyle = isDarkMode
+    ? "text-white font-bold"
+    : "text-black font-bold";
 
   return (
-    <div className={containerStyle}>
-      <h2 className={`text-2xl font-bold mb-6 text-center ${isDarkMode ? 'text-amber-600' : 'text-black'}`}>
-        Investment Calculator
-      </h2>
-
-      <div className="flex flex-col gap-4">
-        <label className={labelStyle}>
-          Initial Investment (₹)
-          <input
-            type="number"
-            value={initial}
-            onChange={(e) => setInitial(e.target.value)}
-            className={inputStyle}
-            placeholder="e.g. 50000"
-          />
-        </label>
-
-        <label className={labelStyle}>
-          Monthly Contribution (₹)
-          <input
-            type="number"
-            value={monthly}
-            onChange={(e) => setMonthly(e.target.value)}
-            className={inputStyle}
-            placeholder="e.g. 2000"
-          />
-        </label>
-
-        <label className={labelStyle}>
-          Annual Interest Rate (%)
-          <input
-            type="number"
-            value={rate}
-            onChange={(e) => setRate(e.target.value)}
-            className={inputStyle}
-            placeholder="e.g. 12"
-          />
-        </label>
-
-        <label className={labelStyle}>
-          Investment Duration (Years)
-          <input
-            type="number"
-            value={years}
-            onChange={(e) => setYears(e.target.value)}
-            className={inputStyle}
-            placeholder="e.g. 10"
-          />
-        </label>
-
-        <button
-          onClick={calculateInvestment}
-          className="bg-amber-600 text-white py-2 rounded-md hover:opacity-90 transition-all"
+    <div className="py-6 px-4 bg-gray-100">
+      {/* Header */}
+      <div className="w-full border-2 border-gray-100 bg-white rounded-sm p-6">
+        <h2
+          className={`text-2xl font-bold mb-2 ${
+            isDarkMode ? "text-amber-600" : "text-black"
+          }`}
         >
-          Calculate
-        </button>
+          Investment Calculator
+        </h2>
+        <p>
+          An investment calculator helps estimate how your money grows over
+          time, considering compounding, contributions, and interest rate.
+        </p>
+      </div>
 
-        {result && (
-          <div className={`mt-6 text-${isDarkMode ? 'white' : 'black'} text-center space-y-2`}>
-            <p><strong>Total Future Value:</strong> ₹{result.futureValue}</p>
-            <p><strong>Total Invested:</strong> ₹{result.invested}</p>
-            <p className="text-green-500 font-bold text-lg">
-              Estimated Gain: ₹{result.gain}
+      {/* Calculator Section */}
+      <div className="flex max-sm:flex-col">
+        {/* Left - Input Sliders */}
+        <div className={containerStyle}>
+          <div className="flex flex-col space-y-5 py-5">
+            {/* Initial Investment */}
+            <div>
+              <label className={`flex justify-between ${labelStyle}`}>
+                Initial Investment (₹):
+                <span className="font-semibold text-sm underline">
+                  {initial}
+                </span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1000000"
+                step="1000"
+                value={initial}
+                onChange={(e) => setInitial(e.target.value)}
+                className={`${inputStyle} w-full`}
+              />
+            </div>
+
+            {/* Monthly Contribution */}
+            <div>
+              <label className={`flex justify-between ${labelStyle}`}>
+                Monthly Contribution (₹):
+                <span className="font-semibold text-sm underline">
+                  {monthly}
+                </span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="100000"
+                step="500"
+                value={monthly}
+                onChange={(e) => setMonthly(e.target.value)}
+                className={`${inputStyle} w-full`}
+              />
+            </div>
+
+            {/* Interest Rate */}
+            <div>
+              <label className={`flex justify-between ${labelStyle}`}>
+                Annual Interest Rate (%):
+                <span className="font-semibold text-sm underline">{rate}</span>
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="30"
+                step="0.1"
+                value={rate}
+                onChange={(e) => setRate(e.target.value)}
+                className={`${inputStyle} w-full`}
+              />
+            </div>
+
+            {/* Years */}
+            <div>
+              <label className={`flex justify-between ${labelStyle}`}>
+                Investment Duration (Years):
+                <span className="font-semibold text-sm underline">{years}</span>
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="50"
+                step="1"
+                value={years}
+                onChange={(e) => setYears(e.target.value)}
+                className={`${inputStyle} w-full`}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Right - Results */}
+        <div className="p-6 rounded-xl shadow-xl max-w-lg w-full mx-auto mt-10 bg-amber-600 text-white">
+          <div className="h-[12vh] flex justify-center items-center">
+            <h1>
+              <strong className="text-3xl">Future Value:</strong>
+              <span className="ml-4 font-semibold">
+                ₹{result ? result.futureValue : 0}
+              </span>
+            </h1>
+          </div>
+          <hr />
+          <div className="space-y-8 pt-11 grid grid-cols-2 px-10">
+            <p>
+              <h2 className="text-lg font-bold">
+                ₹ {result ? result.invested : 0}
+              </h2>
+              <span className="text-sm">Total Invested</span>
+            </p>
+            <p>
+              <h2 className="text-lg font-bold">
+                ₹ {result ? result.gain : 0}
+              </h2>
+              <span className="text-sm">Estimated Gain</span>
             </p>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

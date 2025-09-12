@@ -22,10 +22,7 @@ export default function Dashboard() {
   const boxBg = isDarkMode ? 'bg-[#1a1a1a]' : 'bg-gray-50';
   const border = isDarkMode ? 'border-gray-700' : 'border-gray-100';
 
-  const API_BASE =
-    process.env.NODE_ENV === 'production'
-      ? 'https://dynamicnewsbackend.vercel.app'
-      : 'http://localhost:5000';
+  const API_BASE = `${import.meta.env.VITE_BACKEND_URL}`;
 
   useEffect(() => {
     if (isPrimaryAdmin) {
