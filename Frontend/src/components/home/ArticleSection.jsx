@@ -1942,19 +1942,10 @@ function ArticleCard({ article, isDarkMode, accent }) {
         <div className="absolute inset-0 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-center sm:max-md:p-1">
           <div
             className="text-white text-sm overflow-auto sm:max-md:text-[8px]"
-            // dangerouslySetInnerHTML={{
-            //   __html: DOMPurify.sanitize(
-            //     sectionDescription?.length > 400
-            //       ? sectionDescription.slice(0, 400) + "..."
-            //       : sectionDescription || article.content || ""
-            //   ),
-            // }}
+            
           >
             {sectionDescription}
           </div>
-          {/* <span className="mt-4 inline-block font-semibold text-[#f77331]">
-            Read More →
-          </span> */}
         </div>
       </div>
     </Link>
