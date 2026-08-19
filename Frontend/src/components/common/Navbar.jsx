@@ -14,6 +14,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const API = `${import.meta.env.VITE_BACKEND_URL}/admin/upload`;
 
 export default function Navbar({ scrollToSection, onSearch, user }) {
+  console.log("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+  console.log(user);
+  console.log("User");
   const searchRef = useRef(null);
 
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);

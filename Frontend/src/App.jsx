@@ -50,7 +50,13 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    const storedUser = localStorage.getItem("user");
+
+  setIsLoggedIn(!!token);
+
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
 
     fetch(API)
       .then((res) => res.json())
@@ -60,6 +66,7 @@ function App() {
 
   const handleLogin = (user) => {
     setIsLoggedIn(true);
+    setUser(user);
   };
 
   const handleLogout = () => {
@@ -152,7 +159,18 @@ console.log("APP",user);
             }
           />
 
-          <Route path="/auth-success" element={<AuthSuccess onLogin={ setUser}/>} />
+          {/* <Route path="/auth-success" element={<AuthSuccess onLogin={ setUser}/>} /> */}
+          <Route
+  path="/auth-success"
+  element={
+    <AuthSuccess
+      onLogin={(user) => {
+        setUser(user);
+        setIsLoggedIn(true);
+      }}
+    />
+  }
+/>
 
           <Route
             path="/signup"
